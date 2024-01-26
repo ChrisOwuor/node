@@ -2,11 +2,16 @@ const jwt = require("jsonwebtoken");
 
 const user = require("../models/User");
 // Handle errors
-const HandleErrors = (err, code) => {
+const HandleErrors = (err, code = 0) => {
   const errors = {};
   if (code === 11000) {
     errors.email = "email already exists";
-    return errors;
+  }
+  if (err.message === "wrong password") {
+    errors.password = "wrong password";
+  }
+  if (err.message === "user with this email does not exist") {
+    errors.email = "user with this email does not exist";
   }
   if (err.message.includes("user validation failed")) {
     Object.values(err.errors).forEach((error) => {
@@ -46,7 +51,14 @@ module.exports.login_get = (req, res) => {
 };
 module.exports.login_post = async (req, res) => {
   const { email, password } = req.body;
-
-  console.log(email, password);
-  res.send("user login");
+  console.log({ email, password });
+  try {
+    const user_instance = await user.login(email, password);
+    const token = createToken(user_instance._id);
+    res.cookie("jwt", token, { maxAge: maxAge * 1000, httpOnly: true });
+    res.send({ user: user_instance._id });
+  } catch (error) {
+    const errors = HandleErrors(error);
+    res.send({ errors });
+  }
 };

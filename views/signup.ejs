@@ -41,7 +41,9 @@
         emailError.textContent = data.errors.email;
         passwordError.textContent = data.errors.password;
       }
-      console.log(data);
+      if (data._id) {
+        location.assign('/login');
+      }
     } catch {
       (error) => {
         console.log("errors");

@@ -14,11 +14,23 @@ const userSchema = mongoose.Schema({
     minlength: [5, "password length must be more than five characters long"],
   },
 });
-
+// mongoose pre hooks
 userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt();
-  this.password =await bcrypt.hash(this.password, salt);
+  this.password = await bcrypt.hash(this.password, salt);
   next();
 });
+// mongoose static method
+userSchema.statics.login = async function (email, password) {
+  const user = await this.findOne({ email });
+  if (user) {
+    const auth = await bcrypt.compare(password, user.password);
+    if (auth) {
+      return user;
+    }
+    throw Error("wrong password");
+  }
+  throw Error("user with this email does not exist");
+};
 const user = mongoose.model("user", userSchema);
 module.exports = user;
