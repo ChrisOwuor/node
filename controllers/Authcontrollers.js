@@ -62,3 +62,10 @@ module.exports.login_post = async (req, res) => {
     res.send({ errors });
   }
 };
+
+module.exports.logout_get = (req, res) => {
+  // what we do is that we can replace the existing cookie with an empty string
+  // then give it at maxage of 1 milisecond then its like its expires immediately
+  res.cookie("jwt", "", { maxAge: 1 });
+  res.redirect("/");
+};
