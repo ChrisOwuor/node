@@ -25,6 +25,7 @@ const checkUser = (req, res, next) => {
       }
       const user_instance = await user.findById(decodedToken.id);
       res.locals.user = user_instance;
+
       next();
     });
   } else {
@@ -32,5 +33,11 @@ const checkUser = (req, res, next) => {
     next();
   }
 };
-
-module.exports = { authMiddleware, checkUser };
+const checkMiddleWare = (req, res, next) => {
+  res.data = {
+    name: "chrsipine",
+  };
+  res.locals.tks = "chrispine";
+  next();
+};
+module.exports = { authMiddleware, checkUser, checkMiddleWare };
