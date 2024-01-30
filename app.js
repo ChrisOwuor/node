@@ -2,7 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const appRouter = require("./routes/Authroutes");
 const cookieParser = require("cookie-parser");
-const { authMiddleware, checkUser } = require("./middleware/authMiddleware");
+const {
+  authMiddleware,
+  checkUser,
+  checkMiddleWare,
+} = require("./middleware/authMiddleware");
 const app = express();
 
 // middleware
@@ -29,6 +33,14 @@ mongoose
 
 // routes
 app.get("*", checkUser);
-app.get("/", (req, res) => res.render("home"));
-app.get("/smoothies", authMiddleware, (req, res) => res.render("smoothies"));
+app.get("/", checkMiddleWare, (req, res) => {
+  console.log(res.data);
+  res.render("home");
+});
+app.get("/smoothies", authMiddleware, (req, res) => {
+  const user = {
+    name: "james",
+  };
+  res.render("smoothies", { user });
+});
 app.use(appRouter);
